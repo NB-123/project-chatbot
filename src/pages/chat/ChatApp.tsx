@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SendOutlined } from '@ant-design/icons';
 import {
   List,
@@ -18,6 +18,8 @@ import {
   FileOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
+import { ChatMessage } from '../../../types/chat';
+import { v4 as uuidv4 } from 'uuid';
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -28,13 +30,7 @@ interface Document {
   progress: number;
 }
 
-interface ChatMessage {
-  message: string;
-  isBot: boolean;
-  avatar: string;
-}
-
-const ChatListItem = ({ message, isBot, avatar }: ChatMessage) => {
+const ChatListItem = ({ message, isBot, avatar, timestamp }: ChatMessage) => {
   const messageClass = `p-2 rounded-lg ${
     isBot ? 'bg-gray-100' : 'bg-blue-200 self-end'
   }`;
@@ -44,7 +40,7 @@ const ChatListItem = ({ message, isBot, avatar }: ChatMessage) => {
   const messageComponent = <Text>{message}</Text>;
   const timestampComponent = (
     <Text type="secondary" className="text-xs ml-3 mt-3">
-      {new Date().toLocaleTimeString([], {
+      {new Date(timestamp).toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
       })}
@@ -86,6 +82,12 @@ const ChatInput = ({ value, onChange, onSend }: any) => {
         value={value}
         onChange={onChange}
         className="mr-2"
+        onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            onSend();
+          }
+        }}
       />
       <Button type="primary" onClick={onSend}>
         Send
@@ -97,18 +99,44 @@ const ChatInput = ({ value, onChange, onSend }: any) => {
 export default function ChatApp() {
   const [inputValue, setInputValue] = useState('');
   const [documentList, setDocumentList] = useState<Document[]>([]);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      message: 'Hello, how can I assist you today?',
-      isBot: true,
-      avatar: 'https://i.pravatar.cc/150?img=11',
-    },
-  ]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+
+  useEffect(() => {
+    const fetchMessage = async () => {
+      const response = await fetch('/api/chat/1');
+      const data = await response.json();
+      setChatMessages(data.messages);
+      console.log(data.messages);
+    };
+
+    fetchMessage();
+  }, []);
+
+  useEffect(() => {
+    const updateMessage = async () => {
+      const response = await fetch('/api/chat/1', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(chatMessages),
+      });
+      const data = await response.json();
+      console.log(data);
+    };
+    updateMessage();
+  }, [chatMessages]);
 
   const handleSendMessage = () => {
     setChatMessages([
       ...chatMessages,
-      { message: inputValue, isBot: false, avatar: '' },
+      {
+        id: uuidv4(),
+        message: inputValue,
+        isBot: false,
+        avatar: '',
+        timestamp: new Date().toISOString(),
+      },
     ]);
     setInputValue('');
   };
@@ -231,12 +259,6 @@ export default function ChatApp() {
                 value={inputValue}
                 onChange={(e: any) => setInputValue(e.target.value)}
                 onSend={handleSendMessage}
-                onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }
-                }}
               />
             </div>
           </div>

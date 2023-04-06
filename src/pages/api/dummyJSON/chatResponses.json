@@ -1,0 +1,61 @@
+{
+    "1": {
+        "chatId": 1,
+        "messages": [
+            {
+                "id": 1,
+                "message": "Hello, how can I assist you today?",
+                "isBot": true,
+                "avatar": "https://i.pravatar.cc/150?img=11",
+                "timestamp": "2023-04-08T08:30:00.000Z"
+            },
+            {
+                "id": 2,
+                "message": "I need some help with my account.",
+                "isBot": false,
+                "avatar": "",
+                "timestamp": "2023-04-08T08:31:00.000Z"
+            },
+            {
+                "id": 3,
+                "message": "Sure, what can I do for you?",
+                "isBot": true,
+                "avatar": "https://i.pravatar.cc/150?img=11",
+                "timestamp": "2023-04-08T08:32:00.000Z"
+            },
+            {
+                "id": "449d86f5-e43a-4188-a64a-323dae5577a5",
+                "message": "test",
+                "isBot": false,
+                "avatar": "",
+                "timestamp": "2023-04-06T16:13:31.403Z"
+            }
+        ]
+    },
+    "2": {
+        "chatId": 2,
+        "messages": [
+            {
+                "id": 1,
+                "message": "Welcome to our support center.",
+                "isBot": true,
+                "avatar": "https://i.pravatar.cc/150?img=11",
+                "timestamp": "2023-04-08T09:00:00.000Z"
+            },
+            {
+                "id": 2,
+                "message": "Hi, I have a problem with my order.",
+                "isBot": false,
+                "avatar": "",
+                "timestamp": "2023-04-08T09:01:00.000Z"
+            },
+            {
+                "id": 3,
+                "message": "Sure, what seems to be the issue?",
+                "isBot": true,
+                "avatar": "https://i.pravatar.cc/150?img=11",
+                "timestamp": "2023-04-08T09:02:00.000Z"
+            }
+        ]
+    }
+}
