@@ -36,7 +36,7 @@ export default async function handler(
     const data = JSON.parse(existingData);
     const newData = req.body;
     const chatId = 1;
-    data[chatId].messages = newData;
+    data[chatId].messages = [...data[chatId].messages, ...newData];
     writeNewData(data);
     res.status(200).json(data);
   }

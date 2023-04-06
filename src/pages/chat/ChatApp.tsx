@@ -113,6 +113,9 @@ export default function ChatApp() {
   }, []);
 
   useEffect(() => {
+    if (chatMessages.length > 0) {
+      return;
+    }
     const updateMessage = async () => {
       const response = await fetch('/api/chat/1', {
         method: 'POST',
