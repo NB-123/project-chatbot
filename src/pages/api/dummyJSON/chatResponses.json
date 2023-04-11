@@ -4,31 +4,38 @@
         "messages": [
             {
                 "id": 1,
-                "message": "Hello, how can I assist you today?",
+                "message": "Hello, I'm your business document consultant. How can I help you today?",
                 "isBot": true,
-                "avatar": "https://i.pravatar.cc/150?img=11",
+                "avatar": "https://cdn.dribbble.com/users/279657/screenshots/2701628/chatbot.png",
                 "timestamp": "2023-04-08T08:30:00.000Z"
             },
             {
                 "id": 2,
-                "message": "I need some help with my account.",
+                "message": "How much inventory should I order for next month for my lowest selling SKU?",
                 "isBot": false,
                 "avatar": "",
                 "timestamp": "2023-04-08T08:31:00.000Z"
             },
             {
                 "id": 3,
-                "message": "Sure, what can I do for you?",
+                "message": "To determine the appropriate inventory amount, please provide the SKU's historical sales data and any relevant seasonal factors.",
                 "isBot": true,
-                "avatar": "https://i.pravatar.cc/150?img=11",
+                "avatar": "https://cdn.dribbble.com/users/279657/screenshots/2701628/chatbot.png",
                 "timestamp": "2023-04-08T08:32:00.000Z"
             },
             {
                 "id": "449d86f5-e43a-4188-a64a-323dae5577a5",
-                "message": "test",
+                "message": "What item has sold the most across my sales channels?",
                 "isBot": false,
                 "avatar": "",
                 "timestamp": "2023-04-06T16:13:31.403Z"
+            },
+            {
+                "id": 4,
+                "message": "To provide you with the most sold item, please upload your sales data for each channel.",
+                "isBot": true,
+                "avatar": "https://cdn.dribbble.com/users/279657/screenshots/2701628/chatbot.png",
+                "timestamp": "2023-04-06T16:14:00.000Z"
             }
         ]
     },
@@ -37,21 +44,21 @@
         "messages": [
             {
                 "id": 1,
-                "message": "Welcome to our support center.",
+                "message": "Welcome! I'm here to help you with your business document inquiries.",
                 "isBot": true,
                 "avatar": "https://i.pravatar.cc/150?img=11",
                 "timestamp": "2023-04-08T09:00:00.000Z"
             },
             {
                 "id": 2,
-                "message": "Hi, I have a problem with my order.",
+                "message": "Hi, I need assistance in analyzing my sales report.",
                 "isBot": false,
                 "avatar": "",
                 "timestamp": "2023-04-08T09:01:00.000Z"
             },
             {
                 "id": 3,
-                "message": "Sure, what seems to be the issue?",
+                "message": "Sure, please upload your sales report and let me know what insights you're looking for.",
                 "isBot": true,
                 "avatar": "https://i.pravatar.cc/150?img=11",
                 "timestamp": "2023-04-08T09:02:00.000Z"
