@@ -2,12 +2,53 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
 import MainLayout from '../../../components/MainLayout';
-import ChatApp from './ChatApp';
+import { useEffect, useState } from 'react';
+import { UploadView } from './UploadView';
+import ChatView from './ChatView';
+import { ChatMessage } from '../../../types/chat';
 // import styles from '@/styles/Home.module.css'
 
 const inter = Inter({ subsets: ['latin'] });
+interface Document {
+  name: string;
+  file: File;
+  progress: number;
+}
 
 export default function Home() {
+  const [inputValue, setInputValue] = useState('');
+  const [documentList, setDocumentList] = useState<Document[]>([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [sheetData, setSheetData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchMessage = async () => {
+      const response = await fetch('/api/chat/1');
+      const data = await response.json();
+      setChatMessages(data.messages);
+      console.log(data.messages);
+    };
+
+    fetchMessage();
+  }, []);
+
+  useEffect(() => {
+    if (chatMessages.length > 0) {
+      return;
+    }
+    const updateMessage = async () => {
+      const response = await fetch('/api/chat/1', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(chatMessages),
+      });
+      const data = await response.json();
+      console.log(data);
+    };
+    updateMessage();
+  }, [chatMessages]);
   return (
     <MainLayout>
       <Head>
@@ -18,8 +59,22 @@ export default function Home() {
       </Head>
       <div>
         <h1>Home</h1>
-        {/* Make two cards. One of them is the list of chat. the other is the chat page.  */}
-        <ChatApp />
+        <div className="flex flex-row justify-between bg-gray-100 min-h-screen">
+          <div className="w-1/4">
+            <UploadView
+              setSheetData={setSheetData}
+              sheetData={sheetData}
+              documentList={documentList}
+              setDocumentList={setDocumentList}
+            />
+          </div>
+          <div className="w-3/4 p-4">
+            <ChatView
+              setChatMessages={setChatMessages}
+              chatMessages={chatMessages}
+            />
+          </div>
+        </div>
       </div>
     </MainLayout>
   );
