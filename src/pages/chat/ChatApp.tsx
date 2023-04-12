@@ -10,6 +10,7 @@ import {
   Upload,
   Typography,
   Progress,
+  Modal,
 } from 'antd';
 import {
   PlusOutlined,
@@ -20,6 +21,7 @@ import {
 } from '@ant-design/icons';
 import { ChatMessage } from '../../../types/chat';
 import { v4 as uuidv4 } from 'uuid';
+import * as XLSX from 'xlsx';
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -100,6 +102,8 @@ export default function ChatApp() {
   const [inputValue, setInputValue] = useState('');
   const [documentList, setDocumentList] = useState<Document[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [sheetData, setSheetData] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchMessage = async () => {
@@ -145,6 +149,11 @@ export default function ChatApp() {
   };
 
   const handleFileUpload = (file: File) => {
+    readSheets(file);
+    setDocumentList([...documentList, { name: file.name, file, progress: 0 }]);
+  };
+
+  const uploadFile = (file: File) => {
     setDocumentList([...documentList, { name: file.name, file, progress: 0 }]);
 
     const uploadProgress = setInterval(() => {
@@ -185,8 +194,65 @@ export default function ChatApp() {
     handleFileUpload(files[0]);
   };
 
+  const handleSheetTitleChange = (index: number, title: string) => {
+    setSheetData((prevData) =>
+      prevData.map((sheet, i) => (i === index ? { ...sheet, title } : sheet))
+    );
+  };
+  const readSheets = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = e.target?.result;
+      const workbook = XLSX.read(data, { type: 'binary' });
+      const sheets = workbook.SheetNames.map((sheetName) => {
+        return { name: sheetName, title: '', file };
+      });
+      setSheetData(sheets);
+      setIsModalVisible(true);
+    };
+    reader.readAsBinaryString(file);
+  };
+
+  const handleModalOk = () => {
+    // Start the upload process after the user clicks "OK"
+    const file = sheetData[0]?.file;
+    if (file) {
+      uploadFile(file);
+    }
+    setIsModalVisible(false);
+  };
+
+  const handleModalCancel = () => {
+    setIsModalVisible(false);
+  };
+
   return (
     <div className="flex flex-row justify-between bg-gray-100 min-h-screen">
+      <Modal
+        title="Enter Sheet Titles"
+        open={isModalVisible}
+        onOk={handleModalOk}
+        onCancel={handleModalCancel}
+      >
+        <List
+          dataSource={sheetData}
+          renderItem={(item, index) => (
+            <List.Item>
+              <div className="flex items-center justify-between w-full">
+                <Text className="w-1/4">{item.name}</Text>
+                <Input
+                  placeholder="Title"
+                  className="w-3/4"
+                  value={item.title}
+                  onChange={(e) =>
+                    handleSheetTitleChange(index, e.target.value)
+                  }
+                />
+              </div>
+            </List.Item>
+          )}
+        />
+      </Modal>
       <div className="w-1/4">
         <div className="w-full p-4">
           <Card
@@ -206,9 +272,9 @@ export default function ChatApp() {
               <Upload
                 beforeUpload={handleFileUpload}
                 showUploadList={false}
-                accept=".pdf,.doc,.docx,.xls,.xlsx"
+                accept=".xls,.xlsx"
               >
-                <Button icon={<PlusOutlined />}>Select File</Button>
+                <Button icon={<PlusOutlined />}>Select Excel File</Button>
               </Upload>
             </div>
           </Card>
