@@ -141,6 +141,15 @@ function ChatView({ chatMessages, setChatMessages }: ChatProps) {
           },
           body: JSON.stringify([newMessage]),
         });
+        const data = await response.json();
+        const incomingMessage = {
+          id: uuidv4(),
+          message: data.message,
+          isBot: false,
+          avatar: '',
+          timestamp: new Date().toISOString(),
+        };
+        setChatMessages([...chatMessages, incomingMessage]);
       } else {
         throw new Error('Error sending message');
       }
