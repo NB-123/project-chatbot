@@ -11,6 +11,7 @@ import {
   Typography,
   Progress,
   Modal,
+  Popconfirm,
 } from 'antd';
 import {
   PlusOutlined,
@@ -31,6 +32,7 @@ interface Document {
   name: string;
   file: File;
   progress: number;
+  id: string;
 }
 
 type UploadViewProps = {
@@ -102,7 +104,8 @@ export const UploadView: React.FC<UploadViewProps> = ({
   };
   const handleFileUpload = (file: File) => {
     readSheets(file);
-    setDocumentList([...documentList, { name: file.name, file, progress: 0 }]);
+    // const fileId = uuidv4();
+    // setDocumentList([...documentList, { name: file.name, file, progress: 0, id: fileId }]);
   };
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -152,14 +155,18 @@ export const UploadView: React.FC<UploadViewProps> = ({
 
   const uploadFile = async (file: File) => {
     console.log('Uploading file', file);
-    setDocumentList([...documentList, { name: file.name, file, progress: 0 }]);
+    const fileId = uuidv4();
+    setDocumentList([
+      ...documentList,
+      { name: file.name, file, progress: 0, id: fileId },
+    ]);
     setIsUploading(true);
     setIsModalVisible(false);
     message.loading('Uploading file...');
     try {
       const formData = new FormData();
       formData.append('files', file);
-      formData.append('id', uuidv4());
+      formData.append('id', fileId);
 
       const response = await fetch(
         'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/upload',
@@ -184,6 +191,26 @@ export const UploadView: React.FC<UploadViewProps> = ({
       message.error(`Error uploading file: ${error}`);
     } finally {
       setIsUploading(false); // Set isUploading to false when the upload finishes or encounters an error
+    }
+  };
+
+  const handleDeleteFile = async (item: Document, index: number) => {
+    // Call the DELETE endpoint
+    try {
+      const response = await fetch(
+        `https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/documents/${item.id}`,
+        {
+          method: 'DELETE',
+        }
+      );
+      if (response.ok) {
+        message.success('Document deleted successfully');
+        setDocumentList((prevList) => prevList.filter((_, i) => i !== index));
+      } else {
+        throw new Error('Delete failed');
+      }
+    } catch (error) {
+      message.error(`Error deleting document: ${error}`);
     }
   };
 
@@ -257,15 +284,14 @@ export const UploadView: React.FC<UploadViewProps> = ({
                     )}
                   </div>
                 </div>
-                <Button
-                  type="text"
-                  icon={<DeleteOutlined />}
-                  onClick={() =>
-                    setDocumentList((prevList) =>
-                      prevList.filter((_, i) => i !== index)
-                    )
-                  }
-                />
+                <Popconfirm
+                  title="Are you sure you want to delete?"
+                  onConfirm={() => handleDeleteFile(item, index)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button type="text" icon={<DeleteOutlined />} />
+                </Popconfirm>
               </List.Item>
             )}
           />

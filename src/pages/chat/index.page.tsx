@@ -13,6 +13,7 @@ interface Document {
   name: string;
   file: File;
   progress: number;
+  id: string;
 }
 
 export default function Home() {
