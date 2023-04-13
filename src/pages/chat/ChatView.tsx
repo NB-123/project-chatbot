@@ -10,7 +10,7 @@ import {
   Progress,
   Modal,
 } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChatMessage } from '../../../types/chat';
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -87,18 +87,66 @@ type ChatProps = {
 };
 function ChatView({ chatMessages, setChatMessages }: ChatProps) {
   const [inputValue, setInputValue] = useState('');
-  const handleSendMessage = () => {
-    setChatMessages([
-      ...chatMessages,
-      {
-        id: uuidv4(),
-        message: inputValue,
-        isBot: false,
-        avatar: '',
-        timestamp: new Date().toISOString(),
-      },
-    ]);
+  const [messageApi, contextHolder] = message.useMessage();
+  const fetchChatMessages = async () => {
+    try {
+      const response = await fetch(
+        'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/chats'
+      );
+      if (response.ok) {
+        const fetchedChats = await response.json();
+        const messages = fetchedChats['1'].messages as ChatMessage[]; // Assuming chatId 1 is the target
+        setChatMessages(messages);
+      } else {
+        throw new Error('Fetching chats failed');
+      }
+    } catch (error) {
+      message.error(`Error fetching chats: ${error}`);
+    }
+  };
+  useEffect(() => {
+    fetchChatMessages();
+  }, []);
+  const handleSendMessage = async () => {
+    const newMessage = {
+      id: uuidv4(),
+      message: inputValue,
+      isBot: false,
+      avatar: '',
+      timestamp: new Date().toISOString(),
+    };
+    message.loading('AI is thinking, this might take a while...');
     setInputValue('');
+    setChatMessages([...chatMessages, newMessage]);
+    try {
+      const response = await fetch(
+        'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/query',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: newMessage.message,
+            chatId: '03d12409-f44e-4a5a-ac28-dee7f55082c8',
+          }),
+        }
+      );
+
+      if (response.status === 200) {
+        await fetch(`/api/chat/1`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify([newMessage]),
+        });
+      } else {
+        throw new Error('Error sending message');
+      }
+    } catch (error) {
+      message.error(`Error sending message: ${error}`);
+    }
   };
 
   return (

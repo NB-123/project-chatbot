@@ -47,6 +47,59 @@ export const UploadView: React.FC<UploadViewProps> = ({
   setDocumentList,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const fetchDocuments = async () => {
+    try {
+      const response = await fetch(
+        'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/documents'
+      );
+      if (response.ok) {
+        const fetchedDocuments: { file: string; id: string; url: string }[] =
+          await response.json();
+        // Map fetchedDocuments to the existing documentList format
+        const updatedDocumentList = fetchedDocuments.map((doc) => ({
+          name: doc.file,
+          file: new File([], doc.file),
+          progress: 100, // Assuming all fetched documents are fully uploaded
+          id: doc.id,
+          url: doc.url,
+        }));
+        setDocumentList(updatedDocumentList);
+      } else {
+        throw new Error('Fetching documents failed');
+      }
+    } catch (error) {
+      message.error(`Error fetching documents: ${error}`);
+    }
+  };
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+
+  const submitFileDescription = async (fileDescription: object) => {
+    try {
+      const response = await fetch(
+        'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/descriptions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(fileDescription),
+        }
+      );
+
+      if (response.ok) {
+        //message.success('File description submitted successfully');
+      } else {
+        throw new Error('Submitting file description failed');
+      }
+    } catch (error) {
+      message.error(`Error submitting file description: ${error}`);
+    }
+  };
   const handleFileUpload = (file: File) => {
     readSheets(file);
     setDocumentList([...documentList, { name: file.name, file, progress: 0 }]);
@@ -64,11 +117,18 @@ export const UploadView: React.FC<UploadViewProps> = ({
       sheetData.map((sheet, i) => (i === index ? { ...sheet, title } : sheet))
     );
   };
-  const handleModalOk = () => {
+  const handleModalOk = async () => {
     // Start the upload process after the user clicks "OK"
+
     const file = sheetData[0]?.file;
     if (file) {
-      uploadFile(file);
+      // Submit file description after successful file upload
+      const fileDescription = sheetData.map(({ name, title }) => ({
+        file: name,
+        description: title,
+      }));
+      await submitFileDescription(fileDescription);
+      await uploadFile(file);
     }
     setIsModalVisible(false);
   };
@@ -89,35 +149,42 @@ export const UploadView: React.FC<UploadViewProps> = ({
     };
     reader.readAsBinaryString(file);
   };
-  const uploadFile = (file: File) => {
+
+  const uploadFile = async (file: File) => {
+    console.log('Uploading file', file);
     setDocumentList([...documentList, { name: file.name, file, progress: 0 }]);
+    setIsUploading(true);
+    setIsModalVisible(false);
+    message.loading('Uploading file...');
+    try {
+      const formData = new FormData();
+      formData.append('files', file);
+      formData.append('id', uuidv4());
 
-    const uploadProgress = setInterval(() => {
-      setDocumentList((documentList) => {
-        const newList = [...documentList];
-        const itemIndex = newList.findIndex((item) => item.file === file);
-        if (newList[itemIndex].progress < 100) {
-          newList[itemIndex] = {
-            ...newList[itemIndex],
-            progress: newList[itemIndex].progress + 10,
-          };
-        } else {
-          clearInterval(uploadProgress);
+      const response = await fetch(
+        'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/upload',
+        {
+          method: 'POST',
+          body: formData,
         }
-        return newList;
-      });
-    }, 500);
+      );
 
-    setTimeout(() => {
-      clearInterval(uploadProgress);
-      setDocumentList((documentList) => {
-        const newList = [...documentList];
-        const itemIndex = newList.findIndex((item) => item.file === file);
-        newList[itemIndex] = { ...newList[itemIndex], progress: 100 };
-        return newList;
-      });
-      message.success(`${file.name} uploaded successfully`);
-    }, 5000);
+      if (response.ok) {
+        setDocumentList((prevList) => {
+          const newList = [...prevList];
+          const itemIndex = newList.findIndex((item) => item.file === file);
+          newList[itemIndex] = { ...newList[itemIndex], progress: 100 };
+          return newList;
+        });
+        message.success(`${file.name} uploaded successfully`);
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (error) {
+      message.error(`Error uploading file: ${error}`);
+    } finally {
+      setIsUploading(false); // Set isUploading to false when the upload finishes or encounters an error
+    }
   };
 
   return (
@@ -127,6 +194,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
         open={isModalVisible}
         onOk={handleModalOk}
         onCancel={handleModalCancel}
+        okButtonProps={{ loading: isUploading, disabled: isUploading }}
       >
         <List
           dataSource={sheetData}
@@ -161,7 +229,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
             <Upload
               beforeUpload={handleFileUpload}
               showUploadList={false}
-              accept=".xls,.xlsx"
+              accept=".xls,.xlsx,.csv"
             >
               <Button icon={<PlusOutlined />}>Select Excel File</Button>
             </Upload>
