@@ -51,6 +51,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
   const [inputValue, setInputValue] = useState('');
   const [messageApi, contextHolder] = message.useMessage();
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedSheet, setSelectedSheet] = useState('');
 
   const ChatListItem = ({
     message: chatMessage,
@@ -147,7 +148,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
   const handleThumbsDown = () => {
     setModalVisible(true);
   };
-  const handleModalSubmit = async (selectedSheet: string) => {
+  const handleModalSubmit = async () => {
     await handleSendMessageWithDocument(selectedSheet);
     setModalVisible(false);
 
@@ -272,7 +273,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
         <Select
           style={{ width: '100%' }}
           placeholder="Select a sheet"
-          onChange={(value) => handleModalSubmit(value)}
+          onChange={(value) => setSelectedSheet(value)}
         >
           {documentList.map((doc) =>
             doc.sheets?.map((sheet) => (
