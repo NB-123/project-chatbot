@@ -4,27 +4,22 @@ import { Inter } from 'next/font/google';
 import MainLayout from '../../../components/MainLayout';
 import { useEffect, useState } from 'react';
 import { UploadView } from './UploadView';
+import { CustomDocument } from '../../../types/chat/CustomDocument';
 import ChatView from './ChatView';
 import { ChatMessage } from '../../../types/chat';
 // import styles from '@/styles/Home.module.css'
 
 const inter = Inter({ subsets: ['latin'] });
-interface Document {
-  name: string;
-  file: File;
-  progress: number;
-  id: string;
-}
 
 export default function Home() {
   const [inputValue, setInputValue] = useState('');
-  const [documentList, setDocumentList] = useState<Document[]>([]);
+  const [documentList, setDocumentList] = useState<CustomDocument[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [sheetData, setSheetData] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchMessage = async () => {
-      const response = await fetch('/api/chat/1');
+      const response = await fetch('/api/chat/1', { method: 'GET' });
       const data = await response.json();
       setChatMessages(data.messages);
       console.log(data.messages);
@@ -73,6 +68,7 @@ export default function Home() {
             <ChatView
               setChatMessages={setChatMessages}
               chatMessages={chatMessages}
+              documentList={documentList}
             />
           </div>
         </div>

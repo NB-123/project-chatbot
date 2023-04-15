@@ -24,22 +24,16 @@ import { ChatMessage } from '../../../types/chat';
 import { v4 as uuidv4 } from 'uuid';
 import * as XLSX from 'xlsx';
 import ChatView from './ChatView';
+import { CustomDocument } from '../../../types/chat/CustomDocument';
 
 const { Text } = Typography;
 const { TextArea } = Input;
 
-interface Document {
-  name: string;
-  file: File;
-  progress: number;
-  id: string;
-}
-
 type UploadViewProps = {
   setSheetData: React.Dispatch<React.SetStateAction<any[]>>;
   sheetData: any[];
-  documentList: Document[];
-  setDocumentList: React.Dispatch<React.SetStateAction<Document[]>>;
+  documentList: CustomDocument[];
+  setDocumentList: React.Dispatch<React.SetStateAction<CustomDocument[]>>;
 };
 
 export const UploadView: React.FC<UploadViewProps> = ({
@@ -57,19 +51,30 @@ export const UploadView: React.FC<UploadViewProps> = ({
         'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/documents'
       );
       if (response.ok) {
-        const fetchedDocuments: { file: string; id: string; url: string }[] =
+        const fetchedDocuments: { file: string; children: string[] }[] =
           await response.json();
-        // Map fetchedDocuments to the existing documentList format
+
+        if (fetchedDocuments.length === 0) {
+          return;
+        }
         const updatedDocumentList = fetchedDocuments.map((doc) => ({
           name: doc.file,
-          file: new File([], doc.file),
-          progress: 100, // Assuming all fetched documents are fully uploaded
-          id: doc.id,
-          url: doc.url,
+          file: null,
+          progress: 100,
+          id: 'fetched',
+          sheets: doc.children,
         }));
-        setDocumentList(updatedDocumentList);
+        // Map fetchedDocuments to the existing documentList format
+        // const updatedDocumentList = fetchedDocuments.map((doc) => ({
+        //   name: doc.file,
+        //   file: new File([], doc.file),
+        //   progress: 100, // Assuming all fetched documents are fully uploaded
+        //   id: doc.id,
+        //   url: doc.url,
+        // }));
+        setDocumentList([...updatedDocumentList]);
       } else {
-        throw new Error('Fetching documents failed');
+        throw new Error('Fetching documents failed!');
       }
     } catch (error) {
       message.error(`Error fetching documents: ${error}`);
@@ -94,7 +99,8 @@ export const UploadView: React.FC<UploadViewProps> = ({
       );
 
       if (response.ok) {
-        //message.success('File description submitted successfully');
+        message.success('File description submitted successfully');
+        fetchDocuments();
       } else {
         throw new Error('Submitting file description failed');
       }
@@ -113,8 +119,38 @@ export const UploadView: React.FC<UploadViewProps> = ({
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const files = e.dataTransfer.files;
-    handleFileUpload(files[0]);
+    let supported = true;
+
+    for (let i = 0; i < files.length; i++) {
+      const fileType = files[i].type;
+      const fileExtension = files[i].name.split('.').pop()?.toLowerCase();
+
+      if (
+        fileType !==
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
+        fileType !== 'application/vnd.ms-excel' &&
+        fileType !== 'text/csv' &&
+        fileType !==
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document' &&
+        fileType !== 'application/msword' &&
+        fileExtension !== 'xls' &&
+        fileExtension !== 'xlsx' &&
+        fileExtension !== 'csv' &&
+        fileExtension !== 'doc' &&
+        fileExtension !== 'docx' &&
+        fileExtension !== 'pdf'
+      ) {
+        supported = false;
+        message.error('Your file type is not csv, xls, xlsx, doc, docx, pdf');
+        break;
+      }
+    }
+
+    if (supported) {
+      handleFileUpload(files[0]);
+    }
   };
+
   const handleSheetTitleChange = (index: number, title: string) => {
     setSheetData((sheetData) =>
       sheetData.map((sheet, i) => (i === index ? { ...sheet, title } : sheet))
@@ -154,11 +190,16 @@ export const UploadView: React.FC<UploadViewProps> = ({
   };
 
   const uploadFile = async (file: File) => {
-    console.log('Uploading file', file);
     const fileId = uuidv4();
     setDocumentList([
       ...documentList,
-      { name: file.name, file, progress: 0, id: fileId },
+      {
+        name: file.name,
+        file,
+        progress: 0,
+        id: fileId,
+        sheets: [],
+      },
     ]);
     setIsUploading(true);
     setIsModalVisible(false);
@@ -194,18 +235,20 @@ export const UploadView: React.FC<UploadViewProps> = ({
     }
   };
 
-  const handleDeleteFile = async (item: Document, index: number) => {
+  const handleDeleteFile = async (item: CustomDocument, index: number) => {
     // Call the DELETE endpoint
     try {
       const response = await fetch(
-        `https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/documents/${item.id}`,
+        `https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/documents`,
         {
           method: 'DELETE',
+          body: JSON.stringify({ file: item.name }),
         }
       );
       if (response.ok) {
         message.success('Document deleted successfully');
-        setDocumentList((prevList) => prevList.filter((_, i) => i !== index));
+        fetchDocuments();
+        // setDocumentList((prevList) => prevList.filter((_, i) => i !== index));
       } else {
         throw new Error('Delete failed');
       }
@@ -213,6 +256,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
       message.error(`Error deleting document: ${error}`);
     }
   };
+  console.log('files', documentList);
 
   return (
     <div>
