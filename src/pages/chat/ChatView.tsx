@@ -269,6 +269,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         onOk={() => handleModalSubmit}
+        width={1000}
       >
         <Select
           style={{ width: '100%' }}
@@ -277,8 +278,11 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
         >
           {documentList.map((doc) =>
             doc.sheets?.map((sheet) => (
-              <Select.Option key={sheet} value={sheet}>
-                {sheet}
+              <Select.Option
+                key={`${doc.name}_${sheet}`}
+                value={`${doc.name}_${sheet}`}
+              >
+                {`${doc.name}, Sheet: ${sheet}`}
               </Select.Option>
             ))
           )}
