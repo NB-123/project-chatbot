@@ -136,12 +136,14 @@ export const UploadView: React.FC<UploadViewProps> = ({
         fileExtension !== 'xls' &&
         fileExtension !== 'xlsx' &&
         fileExtension !== 'csv' &&
-        fileExtension !== 'doc' &&
-        fileExtension !== 'docx' &&
+        // fileExtension !== 'doc' &&
+        // fileExtension !== 'docx' &&
         fileExtension !== 'pdf'
       ) {
         supported = false;
-        message.error('Your file type is not csv, xls, xlsx, doc, docx, pdf');
+        message.error(
+          'Your file type is not csv, xls, xlsx, pdf, (future: doc, docs)'
+        );
         break;
       }
     }
