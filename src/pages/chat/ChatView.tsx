@@ -286,16 +286,24 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
           placeholder="Select a sheet"
           onChange={(value) => setSelectedSheet(value)}
         >
-          {documentList.map((doc) =>
-            doc.sheets?.map((sheet) => (
-              <Select.Option
-                key={`${doc.name}_${sheet}`}
-                value={`${doc.name}_${sheet}`}
-              >
-                {`${doc.name}, Sheet: ${sheet}`}
-              </Select.Option>
-            ))
-          )}
+          {documentList.map((doc) => {
+            if (doc.sheets?.length > 0) {
+              return doc.sheets?.map((sheet) => (
+                <Select.Option
+                  key={`${doc.name}_${sheet}`}
+                  value={`${doc.name}_${sheet}`}
+                >
+                  {`${doc.name}, Sheet: ${sheet}`}
+                </Select.Option>
+              ));
+            } else {
+              return (
+                <Select.Option key={doc.name} value={doc.name}>
+                  {doc.name}
+                </Select.Option>
+              );
+            }
+          })}
         </Select>
         <Input.TextArea
           rows={4}

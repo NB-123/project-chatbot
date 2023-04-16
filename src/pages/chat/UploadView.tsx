@@ -168,10 +168,11 @@ export const UploadView: React.FC<UploadViewProps> = ({
         file: name,
         description: title,
       }));
-      await submitFileDescription(fileDescription);
-      await uploadFile(file);
+      submitFileDescription(fileDescription);
+      uploadFile(file);
     }
     setIsModalVisible(false);
+    fetchDocuments();
   };
 
   const handleModalCancel = () => {
