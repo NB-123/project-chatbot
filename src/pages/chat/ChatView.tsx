@@ -185,7 +185,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
           },
           body: JSON.stringify({
             ...newMessage,
-            file: docName.replace(/\.[^/.]+$/, ''),
+            file: docName,
           }),
         }
       );
@@ -301,10 +301,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
               ));
             } else {
               return (
-                <Select.Option
-                  key={doc.name}
-                  value={doc.name.replace(/\.[^/.]+$/, '')}
-                >
+                <Select.Option key={doc.name} value={doc.name}>
                   {doc.name}
                 </Select.Option>
               );
