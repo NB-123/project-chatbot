@@ -261,6 +261,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
   const handleDeleteFile = async (item: CustomDocument, index: number) => {
     // Call the DELETE endpoint
     try {
+      console.log('HANDLE delete file', item, item.name);
       const response = await fetch(
         `https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/documents/${item.name}`,
         {
