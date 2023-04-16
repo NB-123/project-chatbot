@@ -121,7 +121,9 @@ export const UploadView: React.FC<UploadViewProps> = ({
     ) {
       readSheets(file);
     } else {
-      setSheetData([{ name: file.name, title: '', file }]);
+      setSheetData([
+        { name: file.name.replace(/\.[^/.]+$/, ''), title: '', file },
+      ]);
       setIsModalVisible(true);
     }
     // const fileId = uuidv4();
@@ -198,7 +200,11 @@ export const UploadView: React.FC<UploadViewProps> = ({
       const data = e.target?.result;
       const workbook = XLSX.read(data, { type: 'binary' });
       const sheets = workbook.SheetNames.map((sheetName) => {
-        return { name: sheetName, title: '', file };
+        return {
+          name: `${file.name.replace(/\.[^/.]+$/, '')}_${sheetName}`,
+          title: '',
+          file,
+        };
       });
       setSheetData(sheets);
       setIsModalVisible(true);

@@ -183,7 +183,10 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ ...newMessage, file: docName }),
+          body: JSON.stringify({
+            ...newMessage,
+            file: docName.replace(/\.[^/.]+$/, ''),
+          }),
         }
       );
 
@@ -291,14 +294,17 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
               return doc.sheets?.map((sheet) => (
                 <Select.Option
                   key={`${doc.name}_${sheet}`}
-                  value={`${doc.name}_${sheet}`}
+                  value={`${doc.name.replace(/\.[^/.]+$/, '')}_${sheet}`}
                 >
                   {`${doc.name}, Sheet: ${sheet}`}
                 </Select.Option>
               ));
             } else {
               return (
-                <Select.Option key={doc.name} value={doc.name}>
+                <Select.Option
+                  key={doc.name}
+                  value={doc.name.replace(/\.[^/.]+$/, '')}
+                >
                   {doc.name}
                 </Select.Option>
               );
