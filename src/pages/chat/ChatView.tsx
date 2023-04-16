@@ -52,6 +52,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
   const [messageApi, contextHolder] = message.useMessage();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedSheet, setSelectedSheet] = useState('');
+  const [isAIthinking, setIsAIthinking] = useState(false);
 
   const ChatListItem = ({
     message: chatMessage,
@@ -59,7 +60,8 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
     avatar,
     timestamp,
     isLastBotMessage,
-  }: ChatMessage & { isLastBotMessage: boolean }) => {
+    hidden = false,
+  }: ChatMessage & { isLastBotMessage: boolean; hidden?: boolean }) => {
     const messageClass = `p-2 rounded-lg ${
       isBot ? 'bg-gray-100' : 'bg-blue-200 self-end'
     }`;
@@ -76,7 +78,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
       </Text>
     );
     return (
-      <div>
+      <div className={hidden ? 'hidden' : ''}>
         <div className="flex flex-row mb-2">
           <div
             className={messageClass}
@@ -94,7 +96,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
               <div className="flex items-center">
                 {isBot ? avatarComponent : null}
                 {messageComponent}
-                {timestampComponent}
+                {timestamp && timestampComponent}
               </div>
             </div>
           </div>
@@ -148,8 +150,12 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
   const handleThumbsDown = () => {
     setModalVisible(true);
   };
-  const handleModalSubmit = async () => {
-    await handleSendMessageWithDocument(selectedSheet);
+  const handleModalSubmit = () => {
+    if (!inputValue) {
+      message.error('Please enter a query');
+      return;
+    }
+    handleSendMessageWithDocument(selectedSheet);
     setModalVisible(false);
 
     // Create a POST request to the backend /querydoc
@@ -157,6 +163,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
   };
 
   const handleSendMessageWithDocument = async (docName: string) => {
+    setIsAIthinking(true);
     const newMessage = {
       message: inputValue,
       id: uuidv4(),
@@ -207,9 +214,11 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
       setChatMessages([...chatMessagesCopy, newMessage, incomingMessage]);
       message.error(`Error querying bot: ${error}`);
     }
+    setIsAIthinking(false);
   };
 
   const handleSendMessage = async () => {
+    setIsAIthinking(true);
     const newMessage = {
       message: inputValue,
       id: uuidv4(),
@@ -260,6 +269,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
       setChatMessages([...chatMessagesCopy, newMessage, incomingMessage]);
       message.error(`Error querying bot: ${error}`);
     }
+    setIsAIthinking(false);
   };
 
   return (
@@ -268,7 +278,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
         title="Select a sheet that I am supposed to look from"
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
-        onOk={() => handleModalSubmit}
+        onOk={() => handleModalSubmit()}
         width={1000}
       >
         <Select
@@ -287,6 +297,12 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
             ))
           )}
         </Select>
+        <Input.TextArea
+          rows={4}
+          placeholder="Input your query again, 'What is my average sales over the period of 2019?'"
+          className="mt-4"
+          onChange={(e: any) => setInputValue(e.target.value)}
+        />
       </Modal>
 
       <Card title="Chat" className="rounded-lg">
@@ -301,6 +317,15 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
                 }
               />
             ))}
+            <ChatListItem
+              message="AI is thinking..."
+              hidden={!isAIthinking}
+              isBot={true}
+              avatar=""
+              timestamp=""
+              id="AIthinking"
+              isLastBotMessage={false}
+            />
           </div>
           <div className="mt-4">
             <ChatInput
