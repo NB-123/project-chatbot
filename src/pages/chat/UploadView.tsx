@@ -262,7 +262,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
     // Call the DELETE endpoint
     try {
       const response = await fetch(
-        `https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/documents`,
+        `https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/documents/${item.name}`,
         {
           method: 'DELETE',
           body: JSON.stringify({ file: item.name }),
