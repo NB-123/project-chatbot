@@ -294,7 +294,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
               return doc.sheets?.map((sheet) => (
                 <Select.Option
                   key={`${doc.name}_${sheet}`}
-                  value={`${doc.name.replace(/\.[^/.]+$/, '')}_${sheet}`}
+                  value={`${doc.name.replace(/\.[^/.]+$/, '')}_${sheet}.csv`}
                 >
                   {`${doc.name}, Sheet: ${sheet}`}
                 </Select.Option>
