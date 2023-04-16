@@ -80,6 +80,8 @@ export const UploadView: React.FC<UploadViewProps> = ({
       }
     } catch (error) {
       message.error(`Error fetching documents: ${error}`);
+    } finally {
+      setIsLoadingDocuments(false);
     }
     setIsLoadingDocuments(false);
   };
@@ -112,7 +114,16 @@ export const UploadView: React.FC<UploadViewProps> = ({
     }
   };
   const handleFileUpload = (file: File) => {
-    readSheets(file);
+    if (
+      file.type === 'application/vnd.ms-excel' ||
+      file.type ===
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ) {
+      readSheets(file);
+    } else {
+      setSheetData([{ name: file.name, title: '', file }]);
+      setIsModalVisible(true);
+    }
     // const fileId = uuidv4();
     // setDocumentList([...documentList, { name: file.name, file, progress: 0, id: fileId }]);
   };
@@ -267,11 +278,12 @@ export const UploadView: React.FC<UploadViewProps> = ({
   return (
     <div>
       <Modal
-        title="Enter Sheet Titles"
+        title="Enter Description"
         open={isModalVisible}
         onOk={handleModalOk}
         onCancel={handleModalCancel}
         okButtonProps={{ loading: isUploading, disabled: isUploading }}
+        width={1000}
       >
         <List
           dataSource={sheetData}
@@ -280,7 +292,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
               <div className="flex items-center justify-between w-full">
                 <Text className="w-1/4">{item.name}</Text>
                 <Input
-                  placeholder="Title"
+                  placeholder="Description"
                   className="w-3/4"
                   value={item.title}
                   onChange={(e) =>
@@ -306,9 +318,9 @@ export const UploadView: React.FC<UploadViewProps> = ({
             <Upload
               beforeUpload={handleFileUpload}
               showUploadList={false}
-              accept=".xls,.xlsx,.csv"
+              accept=".xls,.xlsx,.csv,.pdf"
             >
-              <Button icon={<PlusOutlined />}>Select Excel File</Button>
+              <Button icon={<PlusOutlined />}>Select File</Button>
             </Upload>
           </div>
         </Card>
