@@ -44,8 +44,10 @@ export const UploadView: React.FC<UploadViewProps> = ({
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
 
   const fetchDocuments = async () => {
+    setIsLoadingDocuments(true);
     try {
       const response = await fetch(
         'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/documents'
@@ -79,6 +81,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
     } catch (error) {
       message.error(`Error fetching documents: ${error}`);
     }
+    setIsLoadingDocuments(false);
   };
 
   useEffect(() => {
@@ -311,7 +314,12 @@ export const UploadView: React.FC<UploadViewProps> = ({
         </Card>
       </div>
       <div className="w-full p-4">
-        <Card title="Documents" className="rounded-lg" bordered={false}>
+        <Card
+          title="Documents"
+          className="rounded-lg"
+          bordered={false}
+          loading={isLoadingDocuments}
+        >
           <List
             dataSource={documentList}
             renderItem={(item, index) => (
