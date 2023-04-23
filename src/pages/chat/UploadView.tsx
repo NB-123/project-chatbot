@@ -19,6 +19,7 @@ import {
   CheckCircleOutlined,
   FileOutlined,
   DeleteOutlined,
+  ReloadOutlined,
 } from '@ant-design/icons';
 import { ChatMessage } from '../../../types/chat';
 import { v4 as uuidv4 } from 'uuid';
@@ -45,12 +46,18 @@ export const UploadView: React.FC<UploadViewProps> = ({
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
 
   const fetchDocuments = async () => {
     setIsLoadingDocuments(true);
     try {
       const response = await fetch(
-        'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/documents'
+        'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/documents',
+        {
+          headers: {
+            Accept: 'application/json',
+          },
+        }
       );
       if (response.ok) {
         const fetchedDocuments: { file: string; children: string[] }[] =
@@ -66,24 +73,23 @@ export const UploadView: React.FC<UploadViewProps> = ({
           id: 'fetched',
           sheets: doc.children,
         }));
-        // Map fetchedDocuments to the existing documentList format
-        // const updatedDocumentList = fetchedDocuments.map((doc) => ({
-        //   name: doc.file,
-        //   file: new File([], doc.file),
-        //   progress: 100, // Assuming all fetched documents are fully uploaded
-        //   id: doc.id,
-        //   url: doc.url,
-        // }));
         setDocumentList([...updatedDocumentList]);
       } else {
         throw new Error('Fetching documents failed!');
       }
     } catch (error) {
       message.error(`Error fetching documents: ${error}`);
+      setFetchError(true);
     } finally {
       setIsLoadingDocuments(false);
     }
-    setIsLoadingDocuments(false);
+
+    // Set fetchError state to true after 10 seconds if the documents could not be fetched
+    setTimeout(() => {
+      if (!documentList.length) {
+        setFetchError(true);
+      }
+    }, 10000);
   };
 
   useEffect(() => {
@@ -236,6 +242,10 @@ export const UploadView: React.FC<UploadViewProps> = ({
         'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/upload',
         {
           method: 'POST',
+          headers: {
+            //
+            Accept: 'application/json',
+          },
           body: formData,
         }
       );
@@ -255,6 +265,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
       message.error(`Error uploading file: ${error}`);
     } finally {
       setIsUploading(false); // Set isUploading to false when the upload finishes or encounters an error
+      fetchDocuments();
     }
   };
 
@@ -285,7 +296,18 @@ export const UploadView: React.FC<UploadViewProps> = ({
   return (
     <div>
       <Modal
-        title="Enter Description"
+        title={
+          <div>
+            <Typography.Title level={5} className="m-0 p-0">
+              Enter Description.
+            </Typography.Title>
+            <Typography.Text type="secondary">
+              Please improve the description by providing more details. This
+              will increase the accuracy of responses you get from the AI
+              Chatbot.
+            </Typography.Text>
+          </div>
+        }
         open={isModalVisible}
         onOk={handleModalOk}
         onCancel={handleModalCancel}
@@ -295,13 +317,13 @@ export const UploadView: React.FC<UploadViewProps> = ({
         <List
           dataSource={sheetData}
           renderItem={(item, index) => (
-            <List.Item>
+            <List.Item key={item.name}>
               <div className="flex items-center justify-between w-full">
                 <Text className="w-1/4">{item.name}</Text>
                 <Input
                   placeholder="Description"
                   className="w-3/4"
-                  value={item.title}
+                  defaultValue={item.name} // BUG IS HERE!
                   onChange={(e) =>
                     handleSheetTitleChange(index, e.target.value)
                   }
@@ -338,6 +360,14 @@ export const UploadView: React.FC<UploadViewProps> = ({
           className="rounded-lg"
           bordered={false}
           loading={isLoadingDocuments}
+          extra={
+            <Button
+              type="primary"
+              onClick={fetchDocuments}
+              loading={isLoadingDocuments}
+              icon={<ReloadOutlined />}
+            ></Button>
+          }
         >
           <List
             dataSource={documentList}

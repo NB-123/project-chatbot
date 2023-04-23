@@ -4,38 +4,17 @@
         "messages": [
             {
                 "id": 1,
-                "message": "Hello, I'm your business document consultant. How can I help you today?",
+                "message": "Hello, I'm Tetrix, your AI-assistant. You can upload PDFs and spreadsheets with information about your inventory, your supply chain or other relevant business information. I can assist you in pulling and making sense of data from those documents. Ask me anything and I'll do my best to help you.",
                 "isBot": true,
                 "avatar": "https://cdn.dribbble.com/users/279657/screenshots/2701628/chatbot.png",
                 "timestamp": "2023-04-08T08:30:00.000Z"
             },
             {
                 "id": 2,
-                "message": "How much inventory should I order for next month for my lowest selling SKU?",
-                "isBot": false,
-                "avatar": "",
-                "timestamp": "2023-04-08T08:31:00.000Z"
-            },
-            {
-                "id": 3,
-                "message": "To determine the appropriate inventory amount, please provide the SKU's historical sales data and any relevant seasonal factors.",
+                "message": "To start a new query, please start with /query and ask your question. (e.g. '/query What is my best selling product?') You can ask follow up questions pertaining to the same document(s) thereafter without the /query prefix. A good rule of thumb is to us /query when you know your question will rely on a new set of document(s).",
                 "isBot": true,
                 "avatar": "https://cdn.dribbble.com/users/279657/screenshots/2701628/chatbot.png",
                 "timestamp": "2023-04-08T08:32:00.000Z"
-            },
-            {
-                "id": "449d86f5-e43a-4188-a64a-323dae5577a5",
-                "message": "What item has sold the most across my sales channels?",
-                "isBot": false,
-                "avatar": "",
-                "timestamp": "2023-04-06T16:13:31.403Z"
-            },
-            {
-                "id": 4,
-                "message": "To provide you with the most sold item, please upload your sales data for each channel.",
-                "isBot": true,
-                "avatar": "https://cdn.dribbble.com/users/279657/screenshots/2701628/chatbot.png",
-                "timestamp": "2023-04-06T16:14:00.000Z"
             }
         ]
     },

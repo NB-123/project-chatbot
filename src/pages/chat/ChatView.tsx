@@ -148,6 +148,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
   //   fetchChatMessages();
   // }, []);
   const handleThumbsDown = () => {
+    setInputValue(chatMessages[chatMessages.length - 2]?.message);
     setModalVisible(true);
   };
   const handleModalSubmit = () => {
@@ -313,6 +314,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
           placeholder="Input your query again, 'What is my average sales over the period of 2019?'"
           className="mt-4"
           onChange={(e: any) => setInputValue(e.target.value)}
+          value={inputValue}
         />
       </Modal>
 
