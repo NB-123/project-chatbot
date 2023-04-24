@@ -1,47 +1,40 @@
 {
-  "1": {
-    "chatId": 1,
-    "messages": [
-      {
-        "id": 1,
-        "message": "Hello, I'm Tetrix, your AI-assistant. You can upload PDFs and spreadsheets with information about your inventory, your supply chain or other relevant business information. I can assist you in pulling and making sense of data from those documents. Ask me anything and I'll do my best to help you.",
-        "isBot": true,
-        "avatar": "https://cdn.dribbble.com/users/279657/screenshots/2701628/chatbot.png",
-        "timestamp": "2023-04-08T08:30:00.000Z"
-      },
-      {
-        "id": 2,
-        "message": "To start a new query, please start with /query and ask your question. (e.g. '/query What is my best selling product?') You can ask follow up questions pertaining to the same document(s) thereafter without the /query prefix. A good rule of thumb is to use /query when you know your question will rely on a new set of document(s).",
-        "isBot": true,
-        "avatar": "https://cdn.dribbble.com/users/279657/screenshots/2701628/chatbot.png",
-        "timestamp": "2023-04-08T08:32:00.000Z"
-      }
-    ]
-  },
-  "2": {
-    "chatId": 2,
-    "messages": [
-      {
-        "id": 1,
-        "message": "Welcome! I'm here to help you with your business document inquiries.",
-        "isBot": true,
-        "avatar": "https://i.pravatar.cc/150?img=11",
-        "timestamp": "2023-04-08T09:00:00.000Z"
-      },
-      {
-        "id": 2,
-        "message": "Hi, I need assistance in analyzing my sales report.",
-        "isBot": false,
-        "avatar": "",
-        "timestamp": "2023-04-08T09:01:00.000Z"
-      },
-      {
-        "id": 3,
-        "message": "Sure, please upload your sales report and let me know what insights you're looking for.",
-        "isBot": true,
-        "avatar": "https://i.pravatar.cc/150?img=11",
-        "timestamp": "2023-04-08T09:02:00.000Z"
-      }
-    ]
-  }
+    "1": {
+        "chatId": 1,
+        "messages": [
+            {
+                "id": 1,
+                "message": "Hello, I'm Tetrix, your AI-assistant. You can upload PDFs and spreadsheets with information about your inventory, your supply chain or other relevant business information. I can assist you in pulling and making sense of data from those documents. Ask me anything and I'll do my best to help you.",
+                "isBot": true,
+                "avatar": "https://cdn.dribbble.com/users/279657/screenshots/2701628/chatbot.png",
+                "timestamp": "2023-04-08T08:30:00.000Z"
+            }
+        ]
+    },
+    "2": {
+        "chatId": 2,
+        "messages": [
+            {
+                "id": 1,
+                "message": "Welcome! I'm here to help you with your business document inquiries.",
+                "isBot": true,
+                "avatar": "https://i.pravatar.cc/150?img=11",
+                "timestamp": "2023-04-08T09:00:00.000Z"
+            },
+            {
+                "id": 2,
+                "message": "Hi, I need assistance in analyzing my sales report.",
+                "isBot": false,
+                "avatar": "",
+                "timestamp": "2023-04-08T09:01:00.000Z"
+            },
+            {
+                "id": 3,
+                "message": "Sure, please upload your sales report and let me know what insights you're looking for.",
+                "isBot": true,
+                "avatar": "https://i.pravatar.cc/150?img=11",
+                "timestamp": "2023-04-08T09:02:00.000Z"
+            }
+        ]
+    }
 }

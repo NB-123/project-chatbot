@@ -208,7 +208,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
       const sheets = workbook.SheetNames.map((sheetName) => {
         return {
           name: `${file.name.replace(/\.[^/.]+$/, '')}_${sheetName}`,
-          title: '',
+          title: `${file.name.replace(/\.[^/.]+$/, '')} ${sheetName}`,
           file,
         };
       });
@@ -289,6 +289,8 @@ export const UploadView: React.FC<UploadViewProps> = ({
       }
     } catch (error) {
       message.error(`Error deleting document: ${error}`);
+    } finally {
+      fetchDocuments();
     }
   };
   console.log('files', documentList);
@@ -323,7 +325,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
                 <Input
                   placeholder="Description"
                   className="w-3/4"
-                  defaultValue={item.name} // BUG IS HERE!
+                  defaultValue={item.title} // BUG IS HERE!
                   onChange={(e) =>
                     handleSheetTitleChange(index, e.target.value)
                   }
