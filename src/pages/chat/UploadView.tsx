@@ -50,6 +50,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
 
   const fetchDocuments = async () => {
     setIsLoadingDocuments(true);
+    setDocumentList([]);
     try {
       const response = await fetch(
         'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/documents',
@@ -128,7 +129,11 @@ export const UploadView: React.FC<UploadViewProps> = ({
       readSheets(file);
     } else {
       setSheetData([
-        { name: file.name.replace(/\.[^/.]+$/, ''), title: '', file },
+        {
+          name: file.name.replace(/\.[^/.]+$/, ''),
+          title: file.name.replace(/\.[^/.]+$/, ''),
+          file,
+        },
       ]);
       setIsModalVisible(true);
     }
