@@ -53,12 +53,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
     setDocumentList([]);
     try {
       const response = await fetch(
-        'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/documents',
-        {
-          headers: {
-            Accept: 'application/json',
-          },
-        }
+        'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/documents'
       );
       if (response.ok) {
         const fetchedDocuments: { file: string; children: string[] }[] =
@@ -248,8 +243,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
         {
           method: 'POST',
           headers: {
-            //
-            Accept: 'application/json',
+            'Content-Type': 'application/json',
           },
           body: formData,
         }
