@@ -98,9 +98,6 @@ export const UploadView: React.FC<UploadViewProps> = ({
         'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/descriptions',
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify(fileDescription),
         }
       );
@@ -242,9 +239,6 @@ export const UploadView: React.FC<UploadViewProps> = ({
         'https://hzewc7wqp5.us-east-2.awsapprunner.com/chatbot/upload',
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: formData,
         }
       );
