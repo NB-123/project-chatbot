@@ -122,8 +122,8 @@ export const UploadView: React.FC<UploadViewProps> = ({
     } else {
       setSheetData([
         {
-          name: file.name.replace(/\.[^/.]+$/, ''),
-          title: file.name.replace(/\.[^/.]+$/, ''),
+          name: file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' '),
+          title: file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' '),
           file,
         },
       ]);
@@ -202,8 +202,14 @@ export const UploadView: React.FC<UploadViewProps> = ({
       const workbook = XLSX.read(data, { type: 'binary' });
       const sheets = workbook.SheetNames.map((sheetName) => {
         return {
-          name: `${file.name.replace(/\.[^/.]+$/, '')}_${sheetName}`,
-          title: `${file.name.replace(/\.[^/.]+$/, '')} ${sheetName}`,
+          name: `${file.name.replace(/\.[^/.]+$/, '')}_${sheetName}`.replace(
+            /_/g,
+            ' '
+          ),
+          title: `${file.name.replace(/\.[^/.]+$/, '')} ${sheetName}`.replace(
+            /_/g,
+            ' '
+          ),
           file,
         };
       });
@@ -284,7 +290,6 @@ export const UploadView: React.FC<UploadViewProps> = ({
       fetchDocuments();
     }
   };
-  console.log('files', documentList);
 
   return (
     <div>
