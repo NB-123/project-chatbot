@@ -188,6 +188,7 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
             ...newMessage,
             file: docName,
           }),
+          mode: 'no-cors',
         }
       );
 
@@ -243,8 +244,10 @@ function ChatView({ chatMessages, setChatMessages, documentList }: ChatProps) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(newMessage),
+          mode: 'no-cors',
         }
       );
+      console.log('RESPONSE', response);
 
       if (response.status === 200) {
         const data = await response.json();

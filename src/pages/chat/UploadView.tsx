@@ -149,9 +149,9 @@ export const UploadView: React.FC<UploadViewProps> = ({
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
         fileType !== 'application/vnd.ms-excel' &&
         fileType !== 'text/csv' &&
-        fileType !==
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document' &&
-        fileType !== 'application/msword' &&
+        // fileType !==
+        //   'application/vnd.openxmlformats-officedocument.wordprocessingml.document' &&
+        // fileType !== 'application/msword' &&
         fileExtension !== 'xls' &&
         fileExtension !== 'xlsx' &&
         fileExtension !== 'csv' &&
@@ -160,9 +160,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
         fileExtension !== 'pdf'
       ) {
         supported = false;
-        message.error(
-          'Your file type is not csv, xls, xlsx, pdf, (future: doc, docs)'
-        );
+        message.error('Your file type is not csv, xls, xlsx, pdf.');
         break;
       }
     }
@@ -365,34 +363,41 @@ export const UploadView: React.FC<UploadViewProps> = ({
           }
         >
           <List
-            dataSource={documentList}
-            renderItem={(item, index) => (
-              <List.Item className="flex items-center justify-between">
-                <div className="flex flex-col">
-                  <div className="items-center">
-                    <Avatar icon={<FileOutlined />} className="mr-2" />
-                    <Text>{item.name}</Text>
-                  </div>
-                  <div className="w-full">
-                    {item.progress > 0 && item.progress < 100 && (
-                      <Progress
-                        percent={item.progress}
-                        size="small"
-                        className="ml-2"
-                      />
-                    )}
-                  </div>
-                </div>
-                <Popconfirm
-                  title="Are you sure you want to delete?"
-                  onConfirm={() => handleDeleteFile(item, index)}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <Button type="text" icon={<DeleteOutlined />} />
-                </Popconfirm>
-              </List.Item>
+            dataSource={documentList.filter(
+              (item) => item.name !== 'General Query'
             )}
+            renderItem={(item, index) => {
+              if (item.name === 'General Query') {
+                return;
+              }
+              return (
+                <List.Item className="flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <div className="items-center">
+                      <Avatar icon={<FileOutlined />} className="mr-2" />
+                      <Text>{item.name}</Text>
+                    </div>
+                    <div className="w-full">
+                      {item.progress > 0 && item.progress < 100 && (
+                        <Progress
+                          percent={item.progress}
+                          size="small"
+                          className="ml-2"
+                        />
+                      )}
+                    </div>
+                  </div>
+                  <Popconfirm
+                    title="Are you sure you want to delete?"
+                    onConfirm={() => handleDeleteFile(item, index)}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button type="text" icon={<DeleteOutlined />} />
+                  </Popconfirm>
+                </List.Item>
+              );
+            }}
           />
         </Card>
       </div>
